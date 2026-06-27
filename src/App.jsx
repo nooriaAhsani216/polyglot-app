@@ -11,7 +11,7 @@ export default function App() {
   const [error, setError] = useState("");
 
 const handleTranslate = async (text, language) => {
-
+  console.log(import.meta.env.VITE_POLYGLOT_WORKER_URL);
   if (!text.trim()) {
     setError("Please enter some text to translate");
     return;
