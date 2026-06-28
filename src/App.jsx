@@ -11,7 +11,6 @@ export default function App() {
   const [error, setError] = useState("");
 
 const handleTranslate = async (text, language) => {
-  console.log(import.meta.env.VITE_POLYGLOT_WORKER_URL);
   if (!text.trim()) {
     setError("Please enter some text to translate");
     return;
@@ -19,29 +18,28 @@ const handleTranslate = async (text, language) => {
   setError("");
   setIsLoading(true);
 
-  try {
-    const response = await fetch(
-      import.meta.env.VITE_POLYGLOT_WORKER_URL,
-      {
-        method: "POST",
-        headers: {
+  try{
+    const response = await fetch(import.meta.env.VITE_POLYGLOT_WORKER_URL,{
+      method:"POST",
+          headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ text, language }),
-      }
-    );
-    const data = await response.json();
-      if (!response.ok) {
-    throw new Error(data.error || "Request failed");
-  }
-    setOriginalText(text);
-    setTranslateText(data.translation); 
-    setShowPage(false);
+        body:JSON.stringify({text,language})
+    });
+    const result = await response.json();
+  console.log(response.status);
+  console.log(result);
+    if(!response.ok){
+      throw new Error("Translation failed");
+    }
+     setOriginalText(text);
+     setTranslateText(result.translation);
+     setShowPage(false);
+  }catch(error){
+     console.log(error);
+     setError(error.message);
 
-  } catch (error) {
-    console.log(error);
-    setError("Network error");
-  } finally {
+  }finally {
     setIsLoading(false);
   }
 };
@@ -56,7 +54,7 @@ const handleTranslate = async (text, language) => {
         <TranslateForm
           onTranslate={handleTranslate}
           error={error}
-          clearError={() => setError("")}
+          clearError={()=>setError("")}
           isLoading={isLoading}
         />
         : <TranslateResult
