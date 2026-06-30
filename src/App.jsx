@@ -10,43 +10,42 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-const handleTranslate = async (text, language) => {
-  if (!text.trim()) {
-    setError("Please enter some text to translate");
-    return;
-  }
-  setError("");
-  setIsLoading(true);
+  const handleTranslate = async (text, language) => {
+    if (!text.trim()) {
+      setError("Please enter some text to translate");
+      return;
+    }
+    setError("");
+    setIsLoading(true);
 
-  try{
-    const response = await fetch(import.meta.env.VITE_POLYGLOT_WORKER_URL,{
-      method:"POST",
-          headers: {
+    try {
+      const response = await fetch(import.meta.env.VITE_POLYGLOT_WORKER_URL, {
+        method: "POST",
+        headers: {
           "Content-Type": "application/json",
         },
-        body:JSON.stringify({text,language})
-    });
-    const result = await response.json();
-  console.log(response.status);
-  console.log(result);
-    if(!response.ok){
-      throw new Error("Translation failed");
-    }
-     setOriginalText(text);
-     setTranslateText(result.translation);
-     setShowPage(false);
-  }catch(error){
-     console.log(error);
-     setError(error.message);
+        body: JSON.stringify({ text, language })
+      });
 
-  }finally {
-    setIsLoading(false);
-  }
-};
+      if (!response.ok) {
+        throw new Error("Translation failed");
+      }
+      const result = await response.json();
+      setOriginalText(text);
+      setTranslateText(result.translation);
+      setShowPage(false);
+    } catch (error) {
+      setError(error.message);
+
+    } finally {
+      setIsLoading(false);
+    }
+  };
   const handleStartOver = () => {
     setShowPage(true);
     setOriginalText("");
     setTranslateText("");
+    setError("");
   }
   return (
     <>
@@ -54,7 +53,7 @@ const handleTranslate = async (text, language) => {
         <TranslateForm
           onTranslate={handleTranslate}
           error={error}
-          clearError={()=>setError("")}
+          clearError={() => setError("")}
           isLoading={isLoading}
         />
         : <TranslateResult
